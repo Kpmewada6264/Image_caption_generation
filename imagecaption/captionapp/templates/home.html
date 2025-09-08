@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Home - AI Image Predictor{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <h1>Welcome to AI Image Caption Generator</h1>
+  <p>Generate meaningful captions for your images instantly using deep learning and computer vision.</p>
+  {% if user.is_authenticated %}
+    <a href="#" class="btn">Go to Dashboard</a>
+  {% else %}
+    <a href="{% url 'register' %}" class="btn">Get Started</a>
+    <a href="{% url 'login' %}" class="btn">Login</a>
+  {% endif %}
+</section>
+
+<section class="about">
+  <img src="{% static 'img/OIP (3).jpg' %}" alt="AI Prediction" class="logo-img"/>
+  <div class="about-text">
+    <h2>About the Project</h2>
+    <p>
+    
+  Our AI Image Caption Generator is built with Keras and Django to analyze images and generate meaningful, human-like captions. 
+  This project demonstrates the power of deep learning and computer vision in understanding visual content.
+
+    </p>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Register - AI Image Predictor{% endblock %}
+{% block content %}
+
+<div class="form-wrapper">
+  <div class="form-container">
+    <h2>Create Your Account</h2>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="error-message">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <input type="text" name="username" placeholder="Username" required />
+      <input type="email" name="email" placeholder="Email" required />
+      <input type="password" name="password1" placeholder="Password" required />
+      <input type="password" name="password2" placeholder="Confirm Password" required />
+      <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+  </div>
+</div>
+
+{% endblock %}

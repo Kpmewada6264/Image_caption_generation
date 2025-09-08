@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}AI Image Predictor{% endblock %}</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="logo">
+      <img src="{% static 'img/OIP (2).jpg' %}" alt="AI Prediction" class="logo-img"/>
+      AI Predictor
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="nav-toggle" id="menuToggle">☰</button>
+
+    <!-- Menu -->
+    <ul class="nav-links" id="navMenu">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      {% if user.is_authenticated %}
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+      {% else %}
+        <li><a href="{% url 'register' %}">Register</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+      {% endif %}
+      <li>
+        <!-- Dark Mode Toggle -->
+        <button id="modeToggle" class="mode-btn">
+          <span class="sun">☀️</span>
+          <span class="moon">🌙</span>
+        </button>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Content -->
+  {% block content %}{% endblock %}
+
+  <!-- Footer -->
+  <footer class="footer">
+    &copy; 2025 AI Image Caption Generator • Made with ❤️ and Python
+    <br>
+    <a href="https://krishnapalportfolio.netlify.app/" target="_blank">Krishnapal Mewada</a>
+    <br>
+    <a href="https://krishnapalportfolio.netlify.app/" target="_blank">Balram Singh Thakur</a>
+  </footer>
+
+  <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

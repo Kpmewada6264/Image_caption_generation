@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard - AI Image Predictor{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+
+  <h2>Welcome, {{ user.username }} 👋</h2>
+  <p>Upload an image and let our AI generate a caption.</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="error-message">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Upload Form -->
+  <form id="uploadForm" method="POST" enctype="multipart/form-data" class="upload-form">
+    {% csrf_token %}
+
+    <!-- Drag & Drop Upload Box -->
+    <div id="dropArea" class="upload-box">
+      <p>📂 Drag & drop an image here, or <span class="browse-btn">browse</span></p>
+      <input type="file" id="fileInput" name="image" accept="image/*" hidden required>
+      <!-- Client-side preview -->
+      <img id="previewImg" class="client-preview hidden" />
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" class="btn-submit">✨ Generate Caption</button>
+  </form>
+
+  <!-- Loading Spinner -->
+  <div id="loadingSpinner" class="spinner" style="display:none;"></div>
+
+  <!-- Server Uploaded Image + Caption -->
+  {% if uploaded_img_url %}
+  <div class="prediction-result">
+    <h3>Uploaded Image:</h3>
+    <img id="serverImg" src="{{ uploaded_img_url }}" alt="Uploaded Image" class="server-preview" />
+
+    <h3>Generated Caption:</h3>
+    <p id="captionText" class="caption-text">{{ caption }}</p>
+  </div>
+  {% endif %}
+
+</div>
+
+<style>
+.dashboard-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.upload-box {
+  border: 2px dashed #3498db;
+  padding: 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.upload-box.dragover {
+  background-color: rgba(52,152,219,0.1);
+  border-color: #1abc9c;
+}
+
+.upload-box p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.browse-btn {
+  color: #3498db;
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.client-preview, .server-preview {
+  margin-top: 1rem;
+  max-width: 300px;
+  border-radius: 12px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.client-preview.hidden {
+  display: none;
+}
+
+.btn-submit {
+  padding: 12px 30px;
+  background: linear-gradient(90deg, #2ecc71, #3498db);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.btn-submit:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+}
+
+.spinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  margin: 2rem auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+.caption-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #34495e;
+  margin-top: 1rem;
+  min-height: 40px;
+}
+
+.error-message {
+  color: #e74c3c;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const dropArea = document.getElementById("dropArea");
+  const fileInput = document.getElementById("fileInput");
+  const previewImg = document.getElementById("previewImg");
+  const spinner = document.getElementById("loadingSpinner");
+  const form = document.getElementById("uploadForm");
+
+  // Click to browse
+  dropArea.addEventListener("click", () => fileInput.click());
+
+  // Show preview on file select
+  fileInput.addEventListener("change", () => {
+    const file = fileInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        previewImg.src = e.target.result;
+        previewImg.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Drag & Drop
+  dropArea.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropArea.classList.add("dragover");
+  });
+  dropArea.addEventListener("dragleave", e => {
+    dropArea.classList.remove("dragover");
+  });
+  dropArea.addEventListener("drop", e => {
+    e.preventDefault();
+    fileInput.files = e.dataTransfer.files;
+    fileInput.dispatchEvent(new Event("change"));
+  });
+
+  // Show spinner on submit
+  form.addEventListener("submit", () => {
+    spinner.style.display = "block";
+  });
+
+  // Typing animation for server caption
+  const caption = document.getElementById("captionText");
+  if (caption) {
+    const text = caption.textContent.trim();
+    caption.textContent = "";
+    let i = 0;
+    function typeWriter() {
+      if (i < text.length) {
+        caption.textContent += text.charAt(i);
+        i++;
+        setTimeout(typeWriter, 50);
+      }
+    }
+    typeWriter();
+  }
+});
+</script>
+{% endblock %}
